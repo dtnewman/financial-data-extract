@@ -8,6 +8,7 @@ import useMultistepForm from '@/hooks/use-multistep-form';
 import { Loader2 } from 'lucide-react';
 import { TransactionTable } from './_components/transaction-table';
 import { CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { SummaryAnalysisComponent } from './_components/summary-analysis';
 
 type UploadState = {
     file: File | null;
@@ -94,7 +95,8 @@ export default function FileProcessingHandler() {
 
     const ResultStep = (
         <div className="space-y-4">
-            <p className="font-medium">Document processed successfully!</p>
+            <p className="font-medium mt-4">Document processed successfully!</p>
+            <SummaryAnalysisComponent analysisResults={state.analysisResults} />
 
             {state.analysisResults && (
                 <div className="space-y-4">
@@ -323,6 +325,7 @@ export default function FileProcessingHandler() {
                     percent: 100
                 }
             });
+
 
             goTo(2); // Show result step
         } catch (error) {

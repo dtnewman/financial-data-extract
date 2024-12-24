@@ -105,7 +105,7 @@ export async function POST(request: Request) {
           ]
         }
       ],
-      max_tokens: 4096,
+      max_tokens: 16384,
       response_format: zodResponseFormat(transactionSchema, 'transactions')
     });
 
