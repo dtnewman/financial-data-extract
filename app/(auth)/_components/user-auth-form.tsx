@@ -44,8 +44,8 @@ export default function UserAuthForm({
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
   const defaultValues = {
-    email: '',
-    password: ''
+    email: 'casca@dtnewman.com',
+    password: 'fba!JFU5juv!qvr!qbz'
   };
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),

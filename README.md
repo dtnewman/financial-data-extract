@@ -16,7 +16,9 @@ The app is live at https://financial-data-extract.vercel.app/
 To use:
 
 1. Navigate to https://financial-data-extract.vercel.app/
-2. Click "Sign Up" to create an account and follow the instructions
+2. Click "Login" and use the pre-filled credentials:
+    - email: `casca@dtnewman.com`
+    - password: `fba!JFU5juv!qvr!qbz`
 3. Login and navigate to the "Extract" page
 4. Upload a bank statement in PDF format and follow the instructions
 

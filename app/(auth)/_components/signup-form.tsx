@@ -11,12 +11,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
 import { useTransition, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import GithubSignInButton from './github-auth-button';
 import VerificationForm from './verification-form';
 import { UsersApiV1Service } from '@/lib/generated/services/UsersApiV1Service';
 
@@ -118,9 +116,13 @@ export default function SignupForm() {
               </FormItem>
             )}
           />
-          <Button disabled={loading} className="w-full" type="submit">
+          {/* <Button disabled={loading} className="w-full" type="submit"> */}
+          <Button disabled={true} className="w-full" type="submit">
             Create account
           </Button>
+          <p className="text-sm text-red-500 text-center">
+            For demo purposes, please use the login page where credentials are pre-filled
+          </p>
         </form>
       </Form>
     </div>
