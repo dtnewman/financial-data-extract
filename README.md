@@ -2,6 +2,9 @@
 
 This is a simple app that allows you to upload a bank statement, extract the transaction details, and analyze the data to provide a summary and risk assessment of creditworthiness.
 
+<img src="screenshots/extract_page.jpg" width="800" alt="Bank Statement Extraction Demo">
+
+
 ## How to run
 
 1. Clone the repo
@@ -29,7 +32,7 @@ This was built as a proof of concept and has several important limitations:
 - It only works with bank statements in PDF format
 - It uses the OpenAI API to extract the data and only makes a single request to the API, so PDFs above a certain size will fail, and even within the token limit, the data extraction might work better if the PDF is split into multiple requests.
 - OpenAI's vision models are decent, but not perfect for extracting data from tables. A better approach would combine a more traditional OCR approach with a structured data extraction approach (for example, [Amazon Textract](https://aws.amazon.com/textract/))
-
+- Lots of error handling is missing (e.g. if the user uploads an invalid file, or if the file is too large, etc.)
 - **Most importantly**, the data sets provided are very limited. We have a single bank statement for a single user for a single month. In an ideal world, we would would to have a larger dataset of bank statements in order to better detect recurring vs. one-off transactions and other anomalies. Also, we would ideally want to combine our model with other data sources outlining financial risks factors.
 
 In general, this makes use of OpenAI's API extensively, rather than building a statistical or ML-based model, since the latter would require a much larger dataset.
