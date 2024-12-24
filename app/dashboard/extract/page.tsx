@@ -17,12 +17,6 @@ export default function Page() {
         </div>
         <Separator />
         <Card>
-          <CardHeader>
-            <CardTitle>Upload Bank Statement</CardTitle>
-            <CardDescription>
-              Upload your bank statement in PDF format to extract insights
-            </CardDescription>
-          </CardHeader>
           <CardContent>
             <FileProcessingHandler />
           </CardContent>
