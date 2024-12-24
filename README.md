@@ -51,4 +51,9 @@ Access the application at [https://financial-data-extract.vercel.app/](https://f
    - Combine with external data sets
    - Create specialized ML models
 
+4. **Async Processing**
+   - Process large files in the background
+   - Provide progress updates to the user (e.g. via email)
+   - Store results in a database for later retrieval
+
 In general, there isn't enough data to build a robust ML model since we only have a single bank statement for a single user for a single month, so we're using OpenAI's API extensively. In reality, there are many existing models for credit risk assessment and external data sets that could be used to improve the model.
