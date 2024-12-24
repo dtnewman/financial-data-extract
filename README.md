@@ -1,38 +1,54 @@
 # Bank Statement Extraction
 
-This is a simple app that allows you to upload a bank statement, extract the transaction details, and analyze the data to provide a summary and risk assessment of creditworthiness.
+A web application for analyzing bank statements, extracting transaction data, and generating creditworthiness assessments.
 
 <img src="screenshots/extract_page.jpg" width="800" alt="Bank Statement Extraction Demo">
 
+## Quick Start
 
-## How to run
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start development server: `npm run dev`
 
-1. Clone the repo
-2. Run `npm install`
-3. Run `npm run dev`
+## Live Demo
 
+Access the application at [https://financial-data-extract.vercel.app/](https://financial-data-extract.vercel.app/)
 
-## Use it
+### Demo Credentials
+- Email: `casca@dtnewman.com`
+- Password: `fba!JFU5juv!qvr!qbz`
 
-The app is live at https://financial-data-extract.vercel.app/
+### Usage Instructions
+1. Visit the application URL
+2. Log in using the demo credentials
+3. Navigate to the "Extract" page
+4. Upload a PDF bank statement
+5. Follow the on-screen instructions
 
-To use:
+## Current Limitations
 
-1. Navigate to https://financial-data-extract.vercel.app/
-2. Click "Login" and use the pre-filled credentials:
-    - email: `casca@dtnewman.com`
-    - password: `fba!JFU5juv!qvr!qbz`
-3. Login and navigate to the "Extract" page
-4. Upload a bank statement in PDF format and follow the instructions
+- PDF format support only
+- Single API request to OpenAI (size/token limitations)
+- Basic OCR capabilities via OpenAI's vision models
+- Limited error handling
+- Restricted dataset (single user, single month)
 
-## Future Work
+## Future Improvements
 
-This was built as a proof of concept and has several important limitations:
+1. **Enhanced Data Processing**
+   - Support for multiple file formats
+   - Batch processing for large PDFs
+   - Integration with specialized OCR services (e.g., Amazon Textract)
 
-- It only works with bank statements in PDF format
-- It uses the OpenAI API to extract the data and only makes a single request to the API, so PDFs above a certain size will fail, and even within the token limit, the data extraction might work better if the PDF is split into multiple requests.
-- OpenAI's vision models are decent, but not perfect for extracting data from tables. A better approach would combine a more traditional OCR approach with a structured data extraction approach (for example, [Amazon Textract](https://aws.amazon.com/textract/))
-- Lots of error handling is missing (e.g. if the user uploads an invalid file, or if the file is too large, etc.)
-- **Most importantly**, the data sets provided are very limited. We have a single bank statement for a single user for a single month. In an ideal world, we would would to have a larger dataset of bank statements in order to better detect recurring vs. one-off transactions and other anomalies. Also, we would ideally want to combine our model with other data sources outlining financial risks factors.
+2. **Robust Error Handling**
+   - File validation
+   - Size limit management
+   - API error handling
 
-In general, this makes use of OpenAI's API extensively, rather than building a statistical or ML-based model, since the latter would require a much larger dataset.
+3. **Extended Dataset**
+   - Ingest multiple bank statements for a single user
+   - Combine with other data sources for that user
+   - Combine with external data sets
+   - Create specialized ML models
+
+In general, there isn't enough data to build a robust ML model since we only have a single bank statement for a single user for a single month, so we're using OpenAI's API extensively. In reality, there are many existing models for credit risk assessment and external data sets that could be used to improve the model.
