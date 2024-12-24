@@ -13,9 +13,23 @@ const transactionSchema = z.object({
     z.object({
       date: z.string(),
       description: z.string(),
+      summary: z.string(),
       credit_amount: z.number().nullable(),
       debit_amount: z.number().nullable(),
-      balance: z.number().nullable()
+      balance: z.number().nullable(),
+      category: z.enum([
+        'income',
+        'housing',
+        'transportation',
+        'food',
+        'utilities',
+        'insurance',
+        'healthcare',
+        'savings',
+        'personal',
+        'entertainment',
+        'other'
+      ])
     })
   ),
   start_balance: z.number().nullable(),
@@ -73,11 +87,16 @@ export async function POST(request: Request) {
             {
               type: 'text',
               text: `Analyze this bank statement and extract all transactions from any tables present. 
-              For each transaction, provide the date, description, and separate credit and debit amounts. 
-              Format amounts as numbers, using null when there is no amount. Also calculate the balance 
-              for each transaction. If the balance is available in the table, use it. If not, don't calculate it,
-              just leave it as null. Also, extract the start and end balance from the document, if available.
-              If not, just leave them as null.`
+              For each transaction, provide:
+              - date
+              - description (a short description of the transaction, pulled directly from the document)
+              - summary (you should summarize the transaction with a short description of what it is, for example:
+                "Payment for internet bill" or "Purchase at Walmart" or "Transfer from checking to savings")
+              - credit and debit amounts (as numbers, using null when there is no amount)
+              - category (classify each transaction into categories like income, housing, transportation, food, utilities, insurance, healthcare, savings, personal, entertainment, other)
+              - balance (if available in the table, otherwise null)
+              
+              Also extract the start and end balance from the document if available, otherwise null.`
             },
             ...imageUrls.map((url) => ({
               type: 'image_url' as const,

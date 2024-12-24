@@ -19,6 +19,8 @@ type UploadState = {
       description: string;
       credit_amount: number | null;
       debit_amount: number | null;
+      category: string;
+      summary: string;
     }>;
     start_balance: number | null;
     end_balance: number | null;
@@ -109,15 +111,17 @@ export default function FileProcessingHandler() {
             <TransactionTable
               transactions={state.analysisResults.transactions.map((t, i) => ({
                 ...t,
-                balance: state
-                  .analysisResults!.transactions.slice(0, i + 1)
-                  .reduce(
-                    (sum, curr) =>
-                      sum +
-                      (curr.credit_amount ?? 0) -
-                      (curr.debit_amount ?? 0),
-                    0
-                  )
+                balance:
+                  (state.analysisResults!.start_balance ?? 0) +
+                  state
+                    .analysisResults!.transactions.slice(0, i + 1)
+                    .reduce(
+                      (sum, curr) =>
+                        sum +
+                        (curr.credit_amount ?? 0) -
+                        (curr.debit_amount ?? 0),
+                      0
+                    )
               }))}
             />
           </div>
