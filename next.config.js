@@ -14,7 +14,15 @@ const nextConfig = {
       }
     ]
   },
-  transpilePackages: ['geist']
+  transpilePackages: ['geist'],
+  serverRuntimeConfig: {
+    api: {
+      bodyParser: {
+        sizeLimit: '10mb'
+      },
+      responseLimit: false
+    }
+  }
 };
 
 module.exports = nextConfig;
