@@ -21,7 +21,7 @@ interface SummaryAnalysisProps {
 export function SummaryAnalysisComponent({ analysisResults }: SummaryAnalysisProps) {
     const [analysis, setAnalysis] = useState<{
         summary: string;
-        risk_factors: string;
+        risk_factors: string[];
         risk_assessment: 'Risky' | 'Neutral' | 'Not Risky';
     }>();
 
@@ -100,9 +100,13 @@ export function SummaryAnalysisComponent({ analysisResults }: SummaryAnalysisPro
 
                 <div>
                     <h3 className="font-medium">Risk Assessment</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        {analysis.risk_factors}
-                    </p>
+                    <ul className="mt-1 space-y-1">
+                        {analysis.risk_factors.map((factor, index) => (
+                            <li key={index} className="text-sm text-muted-foreground">
+                                • {factor}
+                            </li>
+                        ))}
+                    </ul>
                     <div className="mt-2">
                         <span
                             className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${analysis.risk_assessment === 'Risky'

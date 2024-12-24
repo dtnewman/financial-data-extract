@@ -1,5 +1,5 @@
 export type SummaryAnalysis = {
     summary: string;
-    creditRiskDescription: string;
-    riskLevel: 'Risky' | 'Neutral' | 'Not Risky';
+    risk_factors: string[];
+    risk_assessment: 'Risky' | 'Neutral' | 'Not Risky';
 }; 

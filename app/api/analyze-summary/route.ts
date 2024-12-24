@@ -10,7 +10,7 @@ const openai = new OpenAI({
 // Define the response schema
 const summaryResponseSchema = z.object({
     summary: z.string(),
-    risk_factors: z.string(),
+    risk_factors: z.array(z.string()),
     risk_assessment: z.enum(['Risky', 'Neutral', 'Not Risky'])
 });
 
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
         const message = `Please analyze this financial data and provide:
           1. A brief summary of the financial activity
-          2. A description of credit risk factors
+          2. A list of credit risk factors (return as an array)
           3. A risk assessment (must be exactly one of: "Risky", "Neutral", or "Not Risky")
           
           Financial Data:
