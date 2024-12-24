@@ -12,9 +12,10 @@ type UploadState = {
     uploadedFileKey: string | null;
     signedUrl: string | null;
     isProcessing: boolean;
+    analysisResults?: string;
 };
 
-export default function UploadHandler() {
+export default function FileProcessingHandler() {
     const [state, setState] = useState<UploadState>({
         file: null,
         uploadedFileKey: null,
@@ -54,28 +55,19 @@ export default function UploadHandler() {
 
     const ResultStep = (
         <div className="space-y-4">
-            <p className="font-medium">File uploaded successfully!</p>
-            <div className="rounded-lg border p-4">
-                <p className="text-sm font-medium text-muted-foreground mb-2">File Access URL:</p>
-                <div className="flex items-center gap-2">
-                    <code className="flex-1 bg-muted rounded p-2 text-sm break-all">
-                        {state.signedUrl}
-                    </code>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                            navigator.clipboard.writeText(state.signedUrl || '');
-                            toast.success('URL copied to clipboard');
-                        }}
-                    >
-                        Copy
-                    </Button>
+            <p className="font-medium">Document processed successfully!</p>
+
+            {state.analysisResults && (
+                <div className="rounded-lg border p-4">
+                    <p className="text-sm font-medium text-muted-foreground mb-2">
+                        Extracted Information:
+                    </p>
+                    <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm">
+                        {JSON.stringify(JSON.parse(state.analysisResults), null, 2)}
+                    </pre>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                    This URL will expire after a certain period. Make sure to download or access the file before expiration.
-                </p>
-            </div>
+            )}
+
             <div className="flex justify-end space-x-2">
                 <Button
                     variant="outline"
@@ -84,24 +76,14 @@ export default function UploadHandler() {
                             file: null,
                             uploadedFileKey: null,
                             signedUrl: null,
-                            isProcessing: false
+                            isProcessing: false,
+                            analysisResults: undefined
                         });
                         goTo(0);
                     }}
                 >
-                    Upload Another
+                    Process Another
                 </Button>
-                {state.signedUrl && (
-                    <Button
-                        onClick={() => {
-                            if (state.signedUrl) {
-                                window.open(state.signedUrl, '_blank');
-                            }
-                        }}
-                    >
-                        View File
-                    </Button>
-                )}
             </div>
         </div>
     );
@@ -122,29 +104,49 @@ export default function UploadHandler() {
             setState({ ...state, isProcessing: true });
             goTo(1); // Show processing step
 
+            // Upload file
             const formData = new FormData();
             formData.append('file', state.file);
 
-            const response = await fetch('/api/upload', {
+            const uploadResponse = await fetch('/api/upload', {
                 method: 'POST',
                 body: formData
             });
 
-            if (!response.ok) {
+            if (!uploadResponse.ok) {
                 throw new Error('Upload failed');
             }
 
-            const data = await response.json();
+            const { signedUrl: pdfUrl } = await uploadResponse.json();
+
+            // Analyze the document
+            const analysisResponse = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ pdfUrl })
+            });
+
+            if (!analysisResponse.ok) {
+                const errorData = await analysisResponse.json();
+                throw new Error(errorData.error || 'Analysis failed');
+            }
+
+            const { analysis } = await analysisResponse.json();
+
+            // Update state with results
             setState({
                 ...state,
-                uploadedFileKey: data.key,
-                signedUrl: data.signedUrl,
+                signedUrl: pdfUrl,
+                analysisResults: analysis,
                 isProcessing: false
             });
+
             goTo(2); // Show result step
         } catch (error) {
-            console.error('Upload error:', error);
-            toast.error('Failed to upload file');
+            console.error('Processing error:', error);
+            toast.error(error instanceof Error ? error.message : 'Failed to process document');
             setState({ ...state, isProcessing: false });
             goTo(0); // Return to upload step
         }
