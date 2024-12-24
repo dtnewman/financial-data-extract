@@ -22,5 +22,4 @@ export type { UserVerification } from './models/UserVerification';
 export type { ValidationError } from './models/ValidationError';
 
 export { DefaultService } from './services/DefaultService';
-export { JobsApiV1Service } from './services/JobsApiV1Service';
 export { UsersApiV1Service } from './services/UsersApiV1Service';

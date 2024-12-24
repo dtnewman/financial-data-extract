@@ -106,6 +106,55 @@ export default function FileProcessingHandler() {
 
           <div className="rounded-lg border p-4">
             <p className="mb-4 text-sm font-medium text-muted-foreground">
+              Summary by Category:
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="pb-2 text-left">Category</th>
+                    <th className="pb-2 text-right">Credits</th>
+                    <th className="pb-2 text-right">Debits</th>
+                    <th className="pb-2 text-right">Net</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(
+                    state.analysisResults.transactions.reduce(
+                      (acc, transaction) => {
+                        const category = transaction.category;
+                        if (!acc[category]) {
+                          acc[category] = { credits: 0, debits: 0 };
+                        }
+                        acc[category].credits += transaction.credit_amount ?? 0;
+                        acc[category].debits += transaction.debit_amount ?? 0;
+                        return acc;
+                      },
+                      {} as Record<string, { credits: number; debits: number }>
+                    )
+                  ).map(([category, { credits, debits }]) => (
+                    <tr key={category} className="border-b last:border-0">
+                      <td className="py-2 capitalize">
+                        {category.replace(/_/g, ' ')}
+                      </td>
+                      <td className="py-2 text-right text-green-600">
+                        {credits > 0 ? credits.toFixed(2) : '-'}
+                      </td>
+                      <td className="py-2 text-right text-red-600">
+                        {debits > 0 ? debits.toFixed(2) : '-'}
+                      </td>
+                      <td className="py-2 text-right">
+                        {(credits - debits).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="rounded-lg border p-4">
+            <p className="mb-4 text-sm font-medium text-muted-foreground">
               Extracted Transactions:
             </p>
             <TransactionTable

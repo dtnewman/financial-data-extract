@@ -28,7 +28,13 @@ const transactionSchema = z.object({
         'savings',
         'personal',
         'entertainment',
-        'other'
+        'other',
+        'loan_payment',
+        'employee_payroll',
+        'inventory',
+        'advertising',
+        'other_business_expense',
+        'unknown'
       ])
     })
   ),

@@ -113,14 +113,6 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
-    title: 'Jobs',
-    url: '/dashboard/jobs',
-    icon: 'jobs',
-    shortcut: ['j', 'j'],
-    isActive: false,
-    items: [] // No child items
-  },
-  {
     title: 'Account',
     url: '#',
     icon: 'billing',
