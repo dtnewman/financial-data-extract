@@ -14,9 +14,12 @@ const transactionSchema = z.object({
       date: z.string(),
       description: z.string(),
       credit_amount: z.number().nullable(),
-      debit_amount: z.number().nullable()
+      debit_amount: z.number().nullable(),
+      balance: z.number().nullable()
     })
-  )
+  ),
+  start_balance: z.number().nullable(),
+  end_balance: z.number().nullable()
 });
 
 export async function POST(request: Request) {
@@ -69,7 +72,12 @@ export async function POST(request: Request) {
           content: [
             {
               type: 'text',
-              text: 'Analyze this bank statement and extract all transactions from any tables present. For each transaction, provide the date, description, and separate credit and debit amounts. Format amounts as numbers, using null when there is no amount.'
+              text: `Analyze this bank statement and extract all transactions from any tables present. 
+              For each transaction, provide the date, description, and separate credit and debit amounts. 
+              Format amounts as numbers, using null when there is no amount. Also calculate the balance 
+              for each transaction. If the balance is available in the table, use it. If not, don't calculate it,
+              just leave it as null. Also, extract the start and end balance from the document, if available.
+              If not, just leave them as null.`
             },
             ...imageUrls.map((url) => ({
               type: 'image_url' as const,
@@ -95,8 +103,17 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       transactions: JSON.parse(
-        response.choices[0].message.content || '{"transactions":[]}'
-      ).transactions
+        response.choices[0].message.content ||
+          '{"transactions":[], "start_balance": null, "end_balance": null}'
+      ).transactions,
+      start_balance: JSON.parse(
+        response.choices[0].message.content ||
+          '{"transactions":[], "start_balance": null, "end_balance": null}'
+      ).start_balance,
+      end_balance: JSON.parse(
+        response.choices[0].message.content ||
+          '{"transactions":[], "start_balance": null, "end_balance": null}'
+      ).end_balance
     });
   } catch (error) {
     console.error('Error analyzing document:', error);

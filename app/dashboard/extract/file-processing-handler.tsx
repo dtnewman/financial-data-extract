@@ -20,6 +20,8 @@ type UploadState = {
       credit_amount: number | null;
       debit_amount: number | null;
     }>;
+    start_balance: number | null;
+    end_balance: number | null;
   };
 };
 
@@ -68,11 +70,57 @@ export default function FileProcessingHandler() {
       <p className="font-medium">Document processed successfully!</p>
 
       {state.analysisResults && (
-        <div className="rounded-lg border p-4">
-          <p className="mb-4 text-sm font-medium text-muted-foreground">
-            Extracted Transactions:
-          </p>
-          <TransactionTable transactions={state.analysisResults.transactions} />
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="rounded-lg border p-4">
+              <p className="text-sm text-muted-foreground">Starting Balance</p>
+              <p className="text-lg font-medium">
+                {state.analysisResults.start_balance?.toFixed(2) ?? 'N/A'}
+              </p>
+            </div>
+            <div className="rounded-lg border p-4">
+              <p className="text-sm text-muted-foreground">Ending Balance</p>
+              <p className="text-lg font-medium">
+                {state.analysisResults.end_balance?.toFixed(2) ?? 'N/A'}
+              </p>
+            </div>
+            <div className="rounded-lg border p-4">
+              <p className="text-sm text-muted-foreground">Total Credits</p>
+              <p className="text-lg font-medium text-green-600">
+                {state.analysisResults.transactions
+                  .reduce((sum, t) => sum + (t.credit_amount ?? 0), 0)
+                  .toFixed(2)}
+              </p>
+            </div>
+            <div className="rounded-lg border p-4">
+              <p className="text-sm text-muted-foreground">Total Debits</p>
+              <p className="text-lg font-medium text-red-600">
+                {state.analysisResults.transactions
+                  .reduce((sum, t) => sum + (t.debit_amount ?? 0), 0)
+                  .toFixed(2)}
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-lg border p-4">
+            <p className="mb-4 text-sm font-medium text-muted-foreground">
+              Extracted Transactions:
+            </p>
+            <TransactionTable
+              transactions={state.analysisResults.transactions.map((t, i) => ({
+                ...t,
+                balance: state
+                  .analysisResults!.transactions.slice(0, i + 1)
+                  .reduce(
+                    (sum, curr) =>
+                      sum +
+                      (curr.credit_amount ?? 0) -
+                      (curr.debit_amount ?? 0),
+                    0
+                  )
+              }))}
+            />
+          </div>
         </div>
       )}
 
