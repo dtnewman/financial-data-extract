@@ -25,6 +25,8 @@ Access the application at [https://financial-data-extract.vercel.app/](https://f
 4. Upload a PDF bank statement
 5. Follow the on-screen instructions
 
+NOTE: it takes a while to process the data, depending on the size of the file. I recommend using a smaller file for your first test, such as the [bank2.pdf](https://github.com/dtnewman/financial-data-extract/raw/refs/heads/main/sample_files/bank2.pdf) file in the `sample_files` folder.
+
 ## Current Limitations
 
 - PDF format support only
