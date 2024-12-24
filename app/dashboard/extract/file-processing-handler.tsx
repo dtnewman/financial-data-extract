@@ -6,14 +6,21 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import useMultistepForm from '@/hooks/use-multistep-form';
 import { Loader2 } from 'lucide-react';
+import { TransactionTable } from './_components/transaction-table';
 
 type UploadState = {
   file: File | null;
   uploadedFileKey: string | null;
   signedUrl: string | null;
   isProcessing: boolean;
-  processingStatus?: string;
-  analysisResults?: string;
+  analysisResults?: {
+    transactions: Array<{
+      date: string;
+      description: string;
+      credit_amount: number | null;
+      debit_amount: number | null;
+    }>;
+  };
 };
 
 export default function FileProcessingHandler() {
@@ -51,7 +58,7 @@ export default function FileProcessingHandler() {
     <div className="flex flex-col items-center justify-center space-y-4 py-8">
       <Loader2 className="h-8 w-8 animate-spin text-primary" />
       <p className="text-sm text-muted-foreground">
-        {state.processingStatus || 'Processing your document...'}
+        Processing your document...
       </p>
     </div>
   );
@@ -62,12 +69,10 @@ export default function FileProcessingHandler() {
 
       {state.analysisResults && (
         <div className="rounded-lg border p-4">
-          <p className="mb-2 text-sm font-medium text-muted-foreground">
-            Extracted Information:
+          <p className="mb-4 text-sm font-medium text-muted-foreground">
+            Extracted Transactions:
           </p>
-          <pre className="max-h-[400px] overflow-auto rounded-lg bg-muted p-4 text-sm">
-            {JSON.stringify(JSON.parse(state.analysisResults), null, 2)}
-          </pre>
+          <TransactionTable transactions={state.analysisResults.transactions} />
         </div>
       )}
 
@@ -104,12 +109,8 @@ export default function FileProcessingHandler() {
     }
 
     try {
-      setState({
-        ...state,
-        isProcessing: true,
-        processingStatus: 'Uploading file...'
-      });
-      goTo(1);
+      setState({ ...state, isProcessing: true });
+      goTo(1); // Show processing step
 
       // Upload file
       const formData = new FormData();
@@ -126,41 +127,38 @@ export default function FileProcessingHandler() {
 
       const { signedUrl: pdfUrl } = await uploadResponse.json();
 
-      // Start analysis with SSE
-      const eventSource = new EventSource(
-        `/api/analyze?pdfUrl=${encodeURIComponent(pdfUrl)}`
-      );
+      // Analyze the document
+      const analysisResponse = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ pdfUrl })
+      });
 
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+      if (!analysisResponse.ok) {
+        const errorData = await analysisResponse.json();
+        throw new Error(errorData.error || 'Analysis failed');
+      }
 
-        if (data.status) {
-          setState((prev) => ({ ...prev, processingStatus: data.status }));
-        }
+      const { transactions } = await analysisResponse.json();
 
-        if (data.analysis) {
-          setState((prev) => ({
-            ...prev,
-            signedUrl: pdfUrl,
-            analysisResults: data.analysis,
-            isProcessing: false
-          }));
-          eventSource.close();
-          goTo(2);
-        }
-      };
+      // Update state with results
+      setState({
+        ...state,
+        signedUrl: pdfUrl,
+        analysisResults: { transactions },
+        isProcessing: false
+      });
 
-      eventSource.onerror = () => {
-        eventSource.close();
-        throw new Error('Analysis failed');
-      };
+      goTo(2); // Show result step
     } catch (error) {
       console.error('Processing error:', error);
       toast.error(
         error instanceof Error ? error.message : 'Failed to process document'
       );
       setState({ ...state, isProcessing: false });
-      goTo(0);
+      goTo(0); // Return to upload step
     }
   }
 

@@ -20,16 +20,6 @@ const transactionSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const responseStream = new TransformStream();
-  const writer = responseStream.writable.getWriter();
-  const encoder = new TextEncoder();
-
-  const sendStatus = async (status: string) => {
-    await writer.write(
-      encoder.encode(`data: ${JSON.stringify({ status })}\n\n`)
-    );
-  };
-
   try {
     const body = await request.json();
     console.log('body', body);
@@ -45,7 +35,6 @@ export async function POST(request: Request) {
     }
     console.log('fetching pdf');
 
-    await sendStatus('Fetching PDF file...');
     const pdfResponse = await fetch(pdfUrl);
     const pdfBlob = await pdfResponse.blob();
 
@@ -53,7 +42,6 @@ export async function POST(request: Request) {
     const formData = new FormData();
     formData.append('file', pdfBlob, 'document.pdf');
 
-    await sendStatus('Analyzing with OpenAI...');
     // OpenAI analysis code...
 
     // Convert PDF to PNG using PDFRest
