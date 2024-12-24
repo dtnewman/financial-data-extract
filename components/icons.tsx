@@ -66,6 +66,7 @@ export const Icons = {
   laptop: Laptop,
   history: History,
   jobs: Briefcase,
+  extract: File,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

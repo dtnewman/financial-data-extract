@@ -7,6 +7,6 @@ export default async function Dashboard() {
   if (!session?.user) {
     return redirect('/signin');
   } else {
-    redirect('/dashboard/jobs');
+    redirect('/dashboard/extract');
   }
 }

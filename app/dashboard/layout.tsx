@@ -6,8 +6,8 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
-  title: 'TaskNode Dashboard',
-  description: 'Run Python scripts and Jupyter notebooks in the cloud'
+  title: 'Casca Extraction',
+  description: 'Extract valuable insights from financial documents'
 };
 
 export default function DashboardLayout({

@@ -26,7 +26,7 @@ export default function SignInViewPage() {
         <div className="absolute inset-0 bg-zinc-900" />
         <div className="relative z-20 flex items-center text-lg font-medium">
           <Logo isDarkMode={false} height={40} width={40} />
-          <span className="-mt-[14px] inline-block">TaskNode</span>
+          <span className="-mt-[14px] inline-block">Casca Extract</span>
         </div>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">

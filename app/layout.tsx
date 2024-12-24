@@ -8,8 +8,8 @@ import NextTopLoader from 'nextjs-toploader';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'TaskNode',
-  description: 'Basic dashboard with Next.js and Shadcn'
+  title: 'Casca Extract',
+  description: 'Extract valuable insights from financial documents'
 };
 
 const lato = Lato({

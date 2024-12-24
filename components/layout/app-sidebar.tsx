@@ -48,7 +48,7 @@ import Logo from '../logo/logo';
 import { useTheme } from 'next-themes';
 
 export const company = {
-  name: 'TaskNode',
+  name: 'Casca Extract',
   logo: Logo,
   plan: 'Free Tier'
 };

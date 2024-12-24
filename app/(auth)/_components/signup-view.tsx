@@ -20,7 +20,7 @@ export default function SignUpViewPage() {
         <div className="absolute inset-0 bg-zinc-900" />
         <div className="relative z-20 flex items-center text-lg font-medium">
           <Logo isDarkMode={false} height={40} width={40} />
-          <span className="-mt-[14px] inline-block">TaskNode</span>
+          <span className="-mt-[14px] inline-block">Casca Extract</span>
         </div>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
@@ -36,7 +36,7 @@ export default function SignUpViewPage() {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Sign up for TaskNode
+              Sign up for Casca Extract
             </h1>
             <p className="text-sm text-muted-foreground">
               Enter your information below to create your account
