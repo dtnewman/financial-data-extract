@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
+import { updateStatus, clearStatus } from '@/lib/status-store';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -45,27 +46,17 @@ const transactionSchema = z.object({
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log('body', body);
-    const { pdfUrl } = body;
+    const { pdfUrl, jobId } = body;
 
-    console.log('Signed URL:', pdfUrl);
-
-    if (!pdfUrl) {
-      return NextResponse.json(
-        { error: 'No signed URL provided' },
-        { status: 400 }
-      );
-    }
-    console.log('fetching pdf');
-
+    // Update status at different stages
+    updateStatus(jobId, 'Fetching PDF...', 20);
     const pdfResponse = await fetch(pdfUrl);
     const pdfBlob = await pdfResponse.blob();
 
+    updateStatus(jobId, 'Converting PDF to images...', 40);
     // Prepare form data for PDFRest
     const formData = new FormData();
     formData.append('file', pdfBlob, 'document.pdf');
-
-    // OpenAI analysis code...
 
     // Convert PDF to PNG using PDFRest
     const pdfRestResponse = await fetch('https://api.pdfrest.com/png', {
@@ -83,6 +74,7 @@ export async function POST(request: Request) {
 
     console.log('sending request to openai');
 
+    updateStatus(jobId, 'Analyzing document with AI...', 60);
     // Use the converted image URL for OpenAI analysis
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
@@ -126,21 +118,30 @@ export async function POST(request: Request) {
       response.choices[0].message.content
     );
 
-    return NextResponse.json({
+    updateStatus(jobId, 'Processing complete!', 100);
+
+    const result = {
       transactions: JSON.parse(
         response.choices[0].message.content ||
-          '{"transactions":[], "start_balance": null, "end_balance": null}'
+        '{"transactions":[], "start_balance": null, "end_balance": null}'
       ).transactions,
       start_balance: JSON.parse(
         response.choices[0].message.content ||
-          '{"transactions":[], "start_balance": null, "end_balance": null}'
+        '{"transactions":[], "start_balance": null, "end_balance": null}'
       ).start_balance,
       end_balance: JSON.parse(
         response.choices[0].message.content ||
-          '{"transactions":[], "start_balance": null, "end_balance": null}'
+        '{"transactions":[], "start_balance": null, "end_balance": null}'
       ).end_balance
-    });
-  } catch (error) {
+    };
+
+    clearStatus(jobId); // Clean up status
+    return NextResponse.json(result);
+  } catch (error: unknown) {
+    const jobId = (error as any)?.jobId;
+    if (jobId) {
+      clearStatus(jobId);
+    }
     console.error('Error analyzing document:', error);
     return NextResponse.json(
       { error: 'Failed to analyze document' },

@@ -26,6 +26,10 @@ type UploadState = {
         start_balance: number | null;
         end_balance: number | null;
     };
+    progress: {
+        status: string;
+        percent: number;
+    };
 };
 
 export default function FileProcessingHandler() {
@@ -33,7 +37,11 @@ export default function FileProcessingHandler() {
         file: null,
         uploadedFileKey: null,
         signedUrl: null,
-        isProcessing: false
+        isProcessing: false,
+        progress: {
+            status: '',
+            percent: 0
+        }
     });
 
     const FileUploadStep = (
@@ -70,9 +78,17 @@ export default function FileProcessingHandler() {
     const ProcessingStep = (
         <div className="flex flex-col items-center justify-center space-y-4 py-8">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">
-                Processing your document...
-            </p>
+            <div className="flex flex-col items-center space-y-2">
+                <p className="text-sm text-muted-foreground">
+                    {state.progress.status || 'Processing your document...'}
+                </p>
+                <div className="w-full max-w-xs bg-secondary rounded-full h-2">
+                    <div
+                        className="bg-primary h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${state.progress.percent}%` }}
+                    />
+                </div>
+            </div>
         </div>
     );
 
@@ -195,7 +211,11 @@ export default function FileProcessingHandler() {
                             uploadedFileKey: null,
                             signedUrl: null,
                             isProcessing: false,
-                            analysisResults: undefined
+                            analysisResults: undefined,
+                            progress: {
+                                status: '',
+                                percent: 0
+                            }
                         });
                         goTo(0);
                     }}
@@ -212,6 +232,34 @@ export default function FileProcessingHandler() {
         ResultStep
     ]);
 
+    async function pollStatus(jobId: string) {
+        const interval = setInterval(async () => {
+            try {
+                const response = await fetch(`/api/status?jobId=${jobId}`);
+                const data = await response.json();
+
+                setState(prev => ({
+                    ...prev,
+                    progress: {
+                        status: data.status,
+                        percent: data.progress
+                    }
+                }));
+
+                // Stop polling when processing is complete or if there's an error
+                if (data.progress === 100 || data.status === 'error') {
+                    clearInterval(interval);
+                }
+            } catch (error) {
+                console.error('Error polling status:', error);
+                clearInterval(interval);
+            }
+        }, 3000); // Poll every 3 second
+
+        // Clean up interval on component unmount
+        return () => clearInterval(interval);
+    }
+
     async function handleUpload() {
         if (!state.file) {
             toast.error('Please select a file first');
@@ -219,8 +267,12 @@ export default function FileProcessingHandler() {
         }
 
         try {
+            const jobId = crypto.randomUUID();
             setState({ ...state, isProcessing: true });
-            goTo(1); // Show processing step
+            goTo(1);
+
+            // Store the cleanup function
+            const cleanup = await pollStatus(jobId);
 
             // Upload file
             const formData = new FormData();
@@ -243,7 +295,7 @@ export default function FileProcessingHandler() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ pdfUrl })
+                body: JSON.stringify({ pdfUrl, jobId })
             });
 
             if (!analysisResponse.ok) {
@@ -251,8 +303,10 @@ export default function FileProcessingHandler() {
                 throw new Error(errorData.error || 'Analysis failed');
             }
 
-            const { transactions, start_balance, end_balance } =
-                await analysisResponse.json();
+            const { transactions, start_balance, end_balance } = await analysisResponse.json();
+
+            // Stop polling since we have the results
+            cleanup();
 
             // Update state with results
             setState({
@@ -263,15 +317,17 @@ export default function FileProcessingHandler() {
                     start_balance,
                     end_balance
                 },
-                isProcessing: false
+                isProcessing: false,
+                progress: {
+                    status: 'Complete',
+                    percent: 100
+                }
             });
 
             goTo(2); // Show result step
         } catch (error) {
             console.error('Processing error:', error);
-            toast.error(
-                error instanceof Error ? error.message : 'Failed to process document'
-            );
+            toast.error(error instanceof Error ? error.message : 'Failed to process document');
             setState({ ...state, isProcessing: false });
             goTo(0); // Return to upload step
         }
