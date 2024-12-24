@@ -189,13 +189,18 @@ export default function FileProcessingHandler() {
         throw new Error(errorData.error || 'Analysis failed');
       }
 
-      const { transactions } = await analysisResponse.json();
+      const { transactions, start_balance, end_balance } =
+        await analysisResponse.json();
 
       // Update state with results
       setState({
         ...state,
         signedUrl: pdfUrl,
-        analysisResults: { transactions },
+        analysisResults: {
+          transactions,
+          start_balance,
+          end_balance
+        },
         isProcessing: false
       });
 
