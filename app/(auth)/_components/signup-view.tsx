@@ -25,10 +25,9 @@ export default function SignUpViewPage() {
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              &ldquo;Progress is not achieved by luck or accident, but by
-              working on yourself daily.&rdquo;
+              &ldquo;Beware of little expenses; a small leak will sink a great ship.&rdquo;
             </p>
-            <footer className="text-sm">Epictetus</footer>
+            <footer className="text-sm">Benjamin Franklin</footer>
           </blockquote>
         </div>
       </div>
