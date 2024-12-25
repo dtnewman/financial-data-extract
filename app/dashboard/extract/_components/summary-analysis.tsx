@@ -62,7 +62,8 @@ export function SummaryAnalysisComponent({ analysisResults }: SummaryAnalysisPro
                         startBalance: analysisResults.start_balance,
                         endBalance: analysisResults.end_balance,
                         totalCredits,
-                        totalDebits
+                        totalDebits,
+                        transactions: analysisResults.transactions
                     })
                 });
 

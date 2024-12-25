@@ -20,6 +20,14 @@ type SummaryRequest = {
     endBalance: number | null;
     totalCredits: number;
     totalDebits: number;
+    transactions: Array<{
+        date: string;
+        description: string;
+        credit_amount: number | null;
+        debit_amount: number | null;
+        category: string;
+        summary: string;
+    }>;
 };
 
 export async function POST(request: Request) {
@@ -42,6 +50,13 @@ export async function POST(request: Request) {
                 .map(
                     ([category, { credits, debits }]) =>
                         `${category}: Credits: ${credits}, Debits: ${debits}`
+                )
+                .join('\n')}
+
+          Detailed Transactions:
+          ${body.transactions
+                .map(t =>
+                    `Date: ${t.date} | ${t.description} | Credit: ${t.credit_amount || 0} | Debit: ${t.debit_amount || 0} | Category: ${t.category}`
                 )
                 .join('\n')}`;
 
