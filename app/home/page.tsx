@@ -120,7 +120,7 @@ export default function HomePage() {
             <div className="text-center">
               <h3 className="text-lg font-semibold">Automated Extraction</h3>
               <p className="text-muted-foreground">
-                Process financial documents in minutes, not hours
+                Process financial documents in minutes
               </p>
             </div>
             <div className="text-center">
