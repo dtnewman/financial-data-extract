@@ -67,7 +67,7 @@ export async function POST(request: Request) {
             messages: [
                 {
                     role: 'system',
-                    content: `You are a financial analyst. Analyze the provided financial data and create a summary of the transactions and assess credit risk. Focus on spending patterns, income stability, and overall financial health.`
+                    content: `You are a financial analyst. Analyze the provided financial data and create a summary of the transactions and assess credit risk. Focus on spending patterns, income stability, and overall financial health. Return the summary as a string, and the risk factors as an array of strings (ideally 3-5 items).`
                 },
                 {
                     role: 'user',
